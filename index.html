@@ -113,8 +113,21 @@
             font-size: 14px;
             transition: background 0.3s, color 0.3s;
         }
+        .text-analyzer {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--icon-color);
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: background 0.3s, color 0.3s;
+        }
 
         .dark-mode-toggle:hover {
+            background: var(--highlight-color);
+        }
+        .text-analyzer:hover {
             background: var(--highlight-color);
         }
 
@@ -282,7 +295,9 @@
 </ul>
 
                 <hr>
-
+                <h3>Projects</h3>
+                <a href="text-analyzer.html"><button class="text-analyzer">Text Analyzer</button></a>
+				<hr>
                 <h3>Contact Me</h3>
                 <ul id="icons">
                     <li><i class="fas fa-envelope tech-icons"></i>Email: <b>dhruv.malik2112@gmail.com</b></li>

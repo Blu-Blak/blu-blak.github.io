@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Analysis Tool (10,000+ Chars/Words)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+        }
+        .input-section {
+            flex: 1;
+        }
+        .results-section {
+            flex: 1;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .result-box {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .stat-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .stat-value {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        .word-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        .progress {
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .requirements {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .counters {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        .counters span {
+            padding: 3px 8px;
+            border-radius: 3px;
+            background: #f0f0f0;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin: 10px 0;
+            min-height: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text Analysis Tool</h1>
+    <p class="requirements">Enter your text below (<strong>minimum 10,000 characters or 1,500 words</strong>) and click "Analyze"</p>
+    
+    <div class="container">
+        <div class="input-section">
+            <textarea id="textInput" placeholder="Paste your text here (10,000+ characters)..."></textarea>
+            <div class="counters">
+                <span id="charCount">Characters: 0</span>
+                <span id="wordCount">Words: 0</span>
+            </div>
+            <button id="analyzeBtn" disabled>Analyze Text</button>
+            <a href="index.html"><button id="analyzeBtn1">Home</button></a>
+            <div class="error-message" id="errorMsg"></div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+        
+        <div class="results-section" id="resultsSection" style="display:none;">
+            <div class="result-box">
+                <h2>Basic Statistics</h2>
+                <div class="stats-grid" id="basicStats"></div>
+            </div>
+            
+            <div class="result-box">
+                <h2>Pronouns Count</h2>
+                <div class="word-list" id="pronounsList"></div>
+            </div>
+            
+            <div class="result-box">
+                <h2>Prepositions Count</h2>
+                <div class="word-list" id="prepositionsList"></div>
+            </div>
+            
+            <div class="result-box">
+                <h2>Articles Count</h2>
+                <div class="word-list" id="articlesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Minimum requirements
+        const MIN_CHARACTERS = 10000;
+        const MIN_WORDS = 1500;
+
+        // DOM elements
+        const textInput = document.getElementById('textInput');
+        const charCountDisplay = document.getElementById('charCount');
+        const wordCountDisplay = document.getElementById('wordCount');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            textInput.addEventListener('input', handleInput);
+            analyzeBtn.addEventListener('click', analyzeText);
+        });
+
+        // Handle text input
+        function handleInput() {
+            const text = textInput.value;
+            const charCount = text.length;
+            const wordCount = countWords(text);
+            
+            updateCounters(charCount, wordCount);
+            validateInput(charCount, wordCount);
+        }
+
+        // Update character and word counters
+        function updateCounters(charCount, wordCount) {
+            charCountDisplay.textContent = `Characters: ${charCount.toLocaleString()}`;
+            wordCountDisplay.textContent = `Words: ${wordCount.toLocaleString()}`;
+            
+            charCountDisplay.style.color = charCount >= MIN_CHARACTERS ? '#2ecc71' : '#e74c3c';
+            wordCountDisplay.style.color = wordCount >= MIN_WORDS ? '#2ecc71' : '#e74c3c';
+        }
+
+        // Validate input against requirements
+        function validateInput(charCount, wordCount) {
+            const isValid = charCount >= MIN_CHARACTERS || wordCount >= MIN_WORDS;
+            analyzeBtn.disabled = !isValid;
+            
+            if (!isValid) {
+                errorMsg.textContent = `Requires either ${MIN_CHARACTERS.toLocaleString()}+ characters or ${MIN_WORDS.toLocaleString()}+ words`;
+            } else {
+                errorMsg.textContent = '';
+            }
+        }
+
+        // Count words accurately
+        function countWords(text) {
+            if (!text.trim()) return 0;
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        // Main analysis function
+        function analyzeText() {
+            const text = textInput.value;
+            const charCount = text.length;
+            const wordCount = countWords(text);
+            
+            // Final validation
+            if (charCount < MIN_CHARACTERS && wordCount < MIN_WORDS) {
+                errorMsg.textContent = `Text must contain either ${MIN_CHARACTERS.toLocaleString()}+ characters or ${MIN_WORDS.toLocaleString()}+ words`;
+                return;
+            }
+            
+            // Prepare UI for analysis
+            prepareForAnalysis();
+            
+            // Process analysis in chunks to avoid blocking UI
+            setTimeout(() => {
+                try {
+                    // Basic statistics
+                    const basicStats = getBasicStatistics(text);
+                    displayBasicStatistics(basicStats);
+                    progress.style.width = '25%';
+                    
+                    // Pronouns count
+                    const pronouns = countPronouns(text);
+                    displayWordCount(pronouns, 'pronounsList');
+                    progress.style.width = '50%';
+                    
+                    // Prepositions count
+                    const prepositions = countPrepositions(text);
+                    displayWordCount(prepositions, 'prepositionsList');
+                    progress.style.width = '75%';
+                    
+                    // Articles count
+                    const articles = countArticles(text);
+                    displayWordCount(articles, 'articlesList');
+                    progress.style.width = '100%';
+                    
+                    // Complete analysis
+                    setTimeout(() => {
+                        completeAnalysis();
+                    }, 500);
+                    
+                } catch (error) {
+                    showError(error);
+                }
+            }, 100);
+        }
+
+        // UI preparation for analysis
+        function prepareForAnalysis() {
+            progressBar.style.display = 'block';
+            errorMsg.textContent = '';
+            resultsSection.style.display = 'none';
+            analyzeBtn.disabled = true;
+        }
+
+        // Complete analysis and show results
+        function completeAnalysis() {
+            progressBar.style.display = 'none';
+            progress.style.width = '0%';
+            resultsSection.style.display = 'block';
+            analyzeBtn.disabled = false;
+        }
+
+        // Show error message
+        function showError(error) {
+            errorMsg.textContent = `Analysis error: ${error.message}`;
+            progressBar.style.display = 'none';
+            analyzeBtn.disabled = false;
+        }
+
+        // Get basic text statistics
+        function getBasicStatistics(text) {
+            return {
+                letters: text.replace(/[^a-zA-Z]/g, '').length,
+                words: countWords(text),
+                spaces: (text.match(/ /g) || []).length,
+                newlines: (text.match(/\n/g) || []).length,
+                specialSymbols: text.replace(/[a-zA-Z0-9\s]/g, '').length
+            };
+        }
+
+        // Count pronouns in text
+        function countPronouns(text) {
+            const pronouns = [
+                'i', 'me', 'my', 'mine', 'myself',
+                'you', 'your', 'yours', 'yourself', 'yourselves',
+                'he', 'him', 'his', 'himself',
+                'she', 'her', 'hers', 'herself',
+                'it', 'its', 'itself',
+                'we', 'us', 'our', 'ours', 'ourselves',
+                'they', 'them', 'their', 'theirs', 'themselves',
+                'this', 'that', 'these', 'those',
+                'who', 'whom', 'whose', 'which', 'what'
+            ];
+            return countWordsFromList(text, pronouns);
+        }
+
+        // Count prepositions in text
+        function countPrepositions(text) {
+            const prepositions = [
+                'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'at',
+                'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'by',
+                'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into',
+                'like', 'near', 'of', 'off', 'on', 'out', 'outside', 'over',
+                'past', 'since', 'through', 'throughout', 'to', 'toward', 'under', 'underneath', 'until', 'up', 'upon',
+                'with', 'within', 'without'
+            ];
+            return countWordsFromList(text, prepositions);
+        }
+
+        // Count articles in text
+        function countArticles(text) {
+            return countWordsFromList(text, ['a', 'an', 'the']);
+        }
+
+        // Count occurrences of words from a list
+        function countWordsFromList(text, wordList) {
+            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+            const counts = {};
+            
+            wordList.forEach(word => counts[word] = 0);
+            
+            words.forEach(word => {
+                if (wordList.includes(word)) {
+                    counts[word]++;
+                }
+            });
+            
+            return Object.entries(counts)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1]);
+        }
+
+        // Display basic statistics
+        function displayBasicStatistics(stats) {
+            document.getElementById('basicStats').innerHTML = `
+                <div class="stat-item">
+                    <div>Letters</div>
+                    <div class="stat-value">${stats.letters.toLocaleString()}</div>
+                </div>
+                <div class="stat-item">
+                    <div>Words</div>
+                    <div class="stat-value">${stats.words.toLocaleString()}</div>
+                </div>
+                <div class="stat-item">
+                    <div>Spaces</div>
+                    <div class="stat-value">${stats.spaces.toLocaleString()}</div>
+                </div>
+                <div class="stat-item">
+                    <div>Newlines</div>
+                    <div class="stat-value">${stats.newlines.toLocaleString()}</div>
+                </div>
+                <div class="stat-item">
+                    <div>Special Symbols</div>
+                    <div class="stat-value">${stats.specialSymbols.toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        // Display word counts in a list
+        function displayWordCount(wordCounts, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = wordCounts.length 
+                ? wordCounts.map(([word, count]) => `
+                    <div class="word-item">
+                        <span>${word}</span>
+                        <span>${count}</span>
+                    </div>
+                `).join('')
+                : '<p>No matches found.</p>';
+        }
+    </script>
+</body>
+</html>
