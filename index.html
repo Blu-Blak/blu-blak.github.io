@@ -109,7 +109,7 @@
             border: 1px solid var(--icon-color);
             padding: 8px 15px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 14px;
             transition: background 0.3s, color 0.3s;
         }
@@ -125,6 +125,72 @@
             color:var(--item-color);
         }
     </style>
+	<script>
+	// Event tracking function
+	function setupEventTracking() {
+	  // Track page views
+	  document.addEventListener('DOMContentLoaded', function() {
+	    const timestamp = new Date().toISOString();
+	    console.log(`${timestamp}, view, page-load`);
+	    
+	    // Track initial visible elements
+	    trackVisibleElements();
+	  });
+
+	  document.addEventListener('click', function(e) {
+	    const timestamp = new Date().toISOString();
+	    const target = e.target;
+	    let elementType = target.tagName.toLowerCase();
+	    
+	    if (target.classList.length > 0) {
+	      elementType += '.' + Array.from(target.classList).join('.');
+	    }
+	    if (target.id) {
+	      elementType += '#' + target.id;
+	    }
+	    
+	    if (target.tagName === 'A') {
+	      elementType = 'link';
+	    } else if (target.tagName === 'IMG') {
+	      elementType = 'image';
+	    } else if (target.tagName === 'BUTTON') {
+	      elementType = 'button';
+	    }	    
+	    console.log(`${timestamp}, click, ${elementType}`);
+	  }, true);
+	  
+	  function trackVisibleElements() {
+	    const observer = new IntersectionObserver((entries) => {
+	      const timestamp = new Date().toISOString();
+	      entries.forEach(entry => {
+	        if (entry.isIntersecting) {
+	          let elementType = entry.target.tagName.toLowerCase();
+	          if (entry.target.id) {
+	            elementType += '#' + entry.target.id;
+	          }
+	          console.log(`${timestamp}, view, ${elementType}`);
+	        }
+	      });
+	    }, { threshold: 0.5 });
+
+	   document.querySelectorAll('[id], .track-view').forEach(el => {
+	      observer.observe(el);
+	    });
+	  }
+
+	  let lastScrollTime = 0;
+	  window.addEventListener('scroll', function() {
+	    const now = Date.now();
+	    if (now - lastScrollTime > 1000) {
+	      lastScrollTime = now;
+	      trackVisibleElements();
+	    }
+	  });
+	}
+
+	setupEventTracking();
+
+	</script>
 </head>
 <body>
     <button class="dark-mode-toggle" id="dark" onclick="toggleDarkMode()">🌙 Dark Mode</button>
