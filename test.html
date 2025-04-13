@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhruv Malik - 1st Year Computer Science Student</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --icon-color: #333;
+            --highlight-color: #b4f1f0;
+            --border-color: #ddd;
+            --item-color: #000;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --icon-color: #00adb5;
+            --highlight-color:#46267a;
+            --border-color: #444;
+            --item-color: #fff;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 14px;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+        }
+
+        table {
+            width: 70%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        td {
+            vertical-align: top;
+            padding: 10px;
+        }
+
+        img {
+            border-radius: 50%;
+            width: 150px;
+            height: 160px;
+        }
+
+        .social a {
+            margin: 0 5px;
+            color: var(--icon-color);
+            text-decoration: none;
+        }
+
+        .social a:hover {
+            color: var(--highlight-color);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-color);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        .course, .certification, .achievement {
+
+/*#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d#191b3d
+*/
+            background-color: var(--highlight-color);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+            color: var(--text-color);
+        }
+
+        .tech-icons {
+            font-size: 22px;
+            margin-right: 8px;
+            color: var(--icon-color);
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--icon-color);
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--highlight-color);
+        }
+
+        hr {
+            border-color: var(--border-color);
+        }
+        .icons{
+            color:var(--item-color);
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="dark" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <table>
+        <tr>
+            <td align="center">
+                <img src="Untitled.jpeg">
+                <hr>
+                <p>Contact me: <b>dhruv.malik@research.iiit.ac.in</b></p>
+                <hr>
+                <p>I am a passionate 1st-year Computer Science student with a keen interest in programming, software development, and emerging technologies.</p>
+                <hr>
+                <h3>Hobbies</h3>
+                    I love coding and exploring new tech. I love to watch movies and listen to music. I love to play Lawn Tennis, Badminton and Cricket
+                <hr>
+                <img src = "metro_station.jpg">
+                <br>
+					I was born and brought up in Faridabad, Haryana. I spent most of my life there.
+                
+                <hr>
+                <img src="mvn.jpeg">
+                <br>
+	                I completed my schooling from Modern Vidya Niketan, Sector-17, Faridabad, where I studied from kindergarten through 12th grade.
+            </td>
+            <td>
+                <h1>Dhruv Malik</h1>
+                <h3>1st-Year Computer Science Student | Aspiring Software Developer</h3>
+                <p>
+                    Hi! Thank you for visiting my portfolio. I am currently pursuing my Bachelor's in Computer Science and Engineering. I have a strong interest in programming languages like C, C++, and Python, along with web development technologies such as HTML, CSS, and JavaScript.
+                </p>
+                <hr>
+
+                <h3>Courses</h3>
+                <h4>Completed Courses</h4>
+                <div class="course">
+                    <h4>Computer Programming (C)</h4>
+                    <p>Learned the basics of programming, data structures, and algorithms using C and C++.</p>
+                </div>
+                <div class="course">
+                    <h4>Discrete Structures</h4>
+                    <p>Studied discrete mathematics, logic, and probability relevant to computer science.</p>
+                </div>
+                <div class="course">
+                    <h4>Digital Systems and Microcontrollers</h4>
+                    <p>Learned about logic gates, Boolean algebra, and digital circuit design.</p>
+                </div>
+                <div class="course">
+                    <h4>Real Analysis</h4>
+                    <p>Developed effective communication and presentation skills.</p>
+                </div>
+
+                <h4>Ongoing Courses</h4>
+                <div class="course">
+                    <h4>Data Structures and Algorithms</h4>
+                    <p>Currently learning about arrays, linked lists, stacks, queues, trees, and sorting algorithms.</p>
+                </div>
+                <div class="course">
+                    <h4>Introduction to Software Systems</h4>
+                    <p>Exploring front-end development and building basic web projects.</p>
+                </div>
+                <div class="course">
+                    <h4>Introduction to Internet of Things (IOT)</h4>
+                    <p>Learning the principles of OOP and implementing them in Java.</p>
+                </div>
+                <div class="course">
+                    <h4>Linear Algebra</h4>
+                    <p>Understanding relational databases, SQL, and database design.</p>
+                </div>
+                <div class="course">
+                    <h4>Computer Systems and Organisation</h4>
+                    <p>Studying processes, memory management, file systems, and concurrency.</p>
+                </div>
+                <hr>
+
+<h3>Technical Skills</h3>
+
+<h4>Expert</h4>
+<ul>
+  <li>Programming Languages: C, C++</li>
+  <li>Web Development: HTML, CSS</li>
+</ul>
+
+<h4>Proficient</h4>
+<ul>
+  <li>Programming Languages: Python, JavaScript</li>
+  <li>Databases: MySQL, MongoDB</li>
+</ul>
+
+                <hr>
+
+                <h3>Contact Me</h3>
+                <ul id="icons">
+                    <li><i class="fas fa-envelope tech-icons"></i>Email: <b>dhruv.malik2112@gmail.com</b></li>
+                    <li><i class="fab fa-linkedin tech-icons"></i> LinkedIn: <a href="https://www.linkedin.com/in/dhruv-malik-12345678" target="_blank" class ="icons">LinkedIn Profile</a></li>
+                    <li><i class="fab fa-github tech-icons"></i> GitHub: <a href="https://github.com/Dhruv-Malik-1" target="_blank" class ="icons">GitHub Profile</a></li>
+                    <li><i class="fas fa-code tech-icons"></i>Codeforces: <a href="https://codeforces.com/profile/Blublak" target="_blank" class ="icons">Codeforces Profile</a></li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById("dark");
+
+            body.classList.toggle("dark-mode");
+            const isDarkMode = body.classList.contains("dark-mode");
+
+            darkModeToggle.innerText = isDarkMode ? "🌞 Light Mode" : "🌙 Dark Mode";
+            localStorage.setItem("darkMode", isDarkMode);
+        }
+
+        // Load user preference
+        if (localStorage.getItem("darkMode") === "true") {
+            document.body.classList.add("dark-mode");
+            document.getElementById("dark").innerText = "Light Mode";
+        }
+    </script>
+</body>
+</html>
