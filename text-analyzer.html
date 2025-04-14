@@ -178,6 +178,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             textInput.addEventListener('input', handleInput);
             analyzeBtn.addEventListener('click', analyzeText);
+            updateAllCounts(''); // Initialize with empty counts
         });
 
         // Handle text input
@@ -188,6 +189,24 @@
             
             charCountDisplay.textContent = `Characters: ${charCount.toLocaleString()}`;
             wordCountDisplay.textContent = `Words: ${wordCount.toLocaleString()}`;
+            
+            // Update all counts immediately when text changes
+            updateAllCounts(text);
+        }
+
+        // Update all counts (pronouns, prepositions, articles)
+        function updateAllCounts(text) {
+            const pronouns = countPronouns(text);
+            const prepositions = countPrepositions(text);
+            const articles = countArticles(text);
+            
+            displayWordCount(pronouns, 'pronounsList');
+            displayWordCount(prepositions, 'prepositionsList');
+            displayWordCount(articles, 'articlesList');
+            
+            // Also update basic stats
+            const basicStats = getBasicStatistics(text);
+            displayBasicStatistics(basicStats);
         }
 
         // Count words accurately
@@ -199,49 +218,19 @@
         // Main analysis function
         async function analyzeText() {
             const text = textInput.value;
-            
-            // Prepare UI for analysis
             prepareForAnalysis();
             
             try {
-                // Process analysis in chunks to avoid blocking UI
-                const chunkSize = 10000;
-                const chunkCount = Math.ceil(text.length / chunkSize);
-                
-                // Basic stats
-                const basicStats = getBasicStatistics(text);
-                displayBasicStatistics(basicStats);
+                // Show progress animation
                 updateProgress(25);
-                
-                // Process in chunks
-                for (let i = 0; i < chunkCount; i++) {
-                    const start = i * chunkSize;
-                    const chunk = text.substr(start, chunkSize);
-                    
-                    // Process pronouns in first chunk
-                    if (i === 0) {
-                        const pronouns = countPronouns(chunk);
-                        displayWordCount(pronouns, 'pronounsList');
-                        updateProgress(50);
-                    }
-                    
-                    // Process prepositions in middle chunk
-                    if (i === Math.floor(chunkCount/2)) {
-                        const prepositions = countPrepositions(chunk);
-                        displayWordCount(prepositions, 'prepositionsList');
-                        updateProgress(75);
-                    }
-                    
-                    // Small delay to keep UI responsive
-                    await new Promise(resolve => setTimeout(resolve, 0));
-                }
-                
-                // Final processing (articles)
-                const articles = countArticles(text);
-                displayWordCount(articles, 'articlesList');
+                await new Promise(resolve => setTimeout(resolve, 100));
+                updateProgress(50);
+                await new Promise(resolve => setTimeout(resolve, 100));
+                updateProgress(75);
+                await new Promise(resolve => setTimeout(resolve, 100));
                 updateProgress(100);
                 
-                // Complete analysis
+                // Results are already updated in real-time via handleInput()
                 completeAnalysis();
             } catch (error) {
                 showError(error);
