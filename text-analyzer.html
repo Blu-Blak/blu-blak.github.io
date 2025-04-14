@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Analysis Tool (10,000+ Chars/Words)</title>
+    <title>Text Analysis Tool</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -50,10 +50,6 @@
         }
         button:hover {
             background-color: #2980b9;
-        }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
         }
         .result-box {
             background-color: white;
@@ -106,11 +102,6 @@
             width: 0%;
             transition: width 0.3s;
         }
-        .requirements {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
         .counters {
             display: flex;
             justify-content: space-between;
@@ -132,17 +123,17 @@
 </head>
 <body>
     <h1>Text Analysis Tool</h1>
-    <p class="requirements">Enter your text below (<strong>minimum 10,000 characters or 1,500 words</strong>) and click "Analyze"</p>
+    <p>Enter your text below and click "Analyze"</p>
     
     <div class="container">
         <div class="input-section">
-            <textarea id="textInput" placeholder="Paste your text here (10,000+ characters)..."></textarea>
+            <textarea id="textInput" placeholder="Paste your text here..."></textarea>
             <div class="counters">
                 <span id="charCount">Characters: 0</span>
                 <span id="wordCount">Words: 0</span>
             </div>
-            <button id="analyzeBtn" disabled>Analyze Text</button>
-            <a href="index.html"><button id="analyzeBtn1">Home</button></a>
+            <button id="analyzeBtn">Analyze Text</button>
+            <a href="index.html"><button>Home</button></a>
             <div class="error-message" id="errorMsg"></div>
             <div class="progress-bar" id="progressBar">
                 <div class="progress" id="progress"></div>
@@ -173,10 +164,6 @@
     </div>
 
     <script>
-        // Minimum requirements
-        const MIN_CHARACTERS = 10000;
-        const MIN_WORDS = 1500;
-
         // DOM elements
         const textInput = document.getElementById('textInput');
         const charCountDisplay = document.getElementById('charCount');
@@ -199,29 +186,8 @@
             const charCount = text.length;
             const wordCount = countWords(text);
             
-            updateCounters(charCount, wordCount);
-            validateInput(charCount, wordCount);
-        }
-
-        // Update character and word counters
-        function updateCounters(charCount, wordCount) {
             charCountDisplay.textContent = `Characters: ${charCount.toLocaleString()}`;
             wordCountDisplay.textContent = `Words: ${wordCount.toLocaleString()}`;
-            
-            charCountDisplay.style.color = charCount >= MIN_CHARACTERS ? '#2ecc71' : '#e74c3c';
-            wordCountDisplay.style.color = wordCount >= MIN_WORDS ? '#2ecc71' : '#e74c3c';
-        }
-
-        // Validate input against requirements
-        function validateInput(charCount, wordCount) {
-            const isValid = charCount >= MIN_CHARACTERS || wordCount >= MIN_WORDS;
-            analyzeBtn.disabled = !isValid;
-            
-            if (!isValid) {
-                errorMsg.textContent = `Requires either ${MIN_CHARACTERS.toLocaleString()}+ characters or ${MIN_WORDS.toLocaleString()}+ words`;
-            } else {
-                errorMsg.textContent = '';
-            }
         }
 
         // Count words accurately
@@ -231,52 +197,55 @@
         }
 
         // Main analysis function
-        function analyzeText() {
+        async function analyzeText() {
             const text = textInput.value;
-            const charCount = text.length;
-            const wordCount = countWords(text);
-            
-            // Final validation
-            if (charCount < MIN_CHARACTERS && wordCount < MIN_WORDS) {
-                errorMsg.textContent = `Text must contain either ${MIN_CHARACTERS.toLocaleString()}+ characters or ${MIN_WORDS.toLocaleString()}+ words`;
-                return;
-            }
             
             // Prepare UI for analysis
             prepareForAnalysis();
             
-            // Process analysis in chunks to avoid blocking UI
-            setTimeout(() => {
-                try {
-                    // Basic statistics
-                    const basicStats = getBasicStatistics(text);
-                    displayBasicStatistics(basicStats);
-                    progress.style.width = '25%';
+            try {
+                // Process analysis in chunks to avoid blocking UI
+                const chunkSize = 10000;
+                const chunkCount = Math.ceil(text.length / chunkSize);
+                
+                // Basic stats
+                const basicStats = getBasicStatistics(text);
+                displayBasicStatistics(basicStats);
+                updateProgress(25);
+                
+                // Process in chunks
+                for (let i = 0; i < chunkCount; i++) {
+                    const start = i * chunkSize;
+                    const chunk = text.substr(start, chunkSize);
                     
-                    // Pronouns count
-                    const pronouns = countPronouns(text);
-                    displayWordCount(pronouns, 'pronounsList');
-                    progress.style.width = '50%';
+                    // Process pronouns in first chunk
+                    if (i === 0) {
+                        const pronouns = countPronouns(chunk);
+                        displayWordCount(pronouns, 'pronounsList');
+                        updateProgress(50);
+                    }
                     
-                    // Prepositions count
-                    const prepositions = countPrepositions(text);
-                    displayWordCount(prepositions, 'prepositionsList');
-                    progress.style.width = '75%';
+                    // Process prepositions in middle chunk
+                    if (i === Math.floor(chunkCount/2)) {
+                        const prepositions = countPrepositions(chunk);
+                        displayWordCount(prepositions, 'prepositionsList');
+                        updateProgress(75);
+                    }
                     
-                    // Articles count
-                    const articles = countArticles(text);
-                    displayWordCount(articles, 'articlesList');
-                    progress.style.width = '100%';
-                    
-                    // Complete analysis
-                    setTimeout(() => {
-                        completeAnalysis();
-                    }, 500);
-                    
-                } catch (error) {
-                    showError(error);
+                    // Small delay to keep UI responsive
+                    await new Promise(resolve => setTimeout(resolve, 0));
                 }
-            }, 100);
+                
+                // Final processing (articles)
+                const articles = countArticles(text);
+                displayWordCount(articles, 'articlesList');
+                updateProgress(100);
+                
+                // Complete analysis
+                completeAnalysis();
+            } catch (error) {
+                showError(error);
+            }
         }
 
         // UI preparation for analysis
@@ -287,12 +256,19 @@
             analyzeBtn.disabled = true;
         }
 
+        // Update progress
+        function updateProgress(percent) {
+            progress.style.width = `${percent}%`;
+        }
+
         // Complete analysis and show results
         function completeAnalysis() {
-            progressBar.style.display = 'none';
-            progress.style.width = '0%';
-            resultsSection.style.display = 'block';
-            analyzeBtn.disabled = false;
+            setTimeout(() => {
+                progressBar.style.display = 'none';
+                progress.style.width = '0%';
+                resultsSection.style.display = 'block';
+                analyzeBtn.disabled = false;
+            }, 500);
         }
 
         // Show error message
